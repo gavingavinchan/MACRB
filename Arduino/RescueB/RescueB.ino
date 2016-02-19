@@ -7,10 +7,13 @@
 
 #include <Servo.h>
 #include "Sensors.h"
+#include "Motor.h"
 #include "Map.h"
 #include <Wire.h>
 
 Sensors sensors;
+Motor motor;
+
 int mode = 1;
 float initOrientation = 0;
 boolean rotate = false;
@@ -25,6 +28,7 @@ void setup(){
 
   Serial.println(F("Sensor Initialization"));
   sensors.init();
+  motor.init();
 
   Serial.println(F("Sensor Init complete"));
   
@@ -37,46 +41,61 @@ void setup(){
   //cmap.printMap();
 
   //Map::debugMap(8,4, 0, 0);
-}
 
 /*
- * main Algorithm
- */
-while(//all tiles visited and back at start) {
-  //tile condition fuction
+  turnToBearing(NORTH);
+  delay(2000);
+  turnToBearing(SOUTH);
+  delay(2000);
+  turnToBearing(EAST);
+  delay(2000);
+  turnToBearing(WEST);
+  delay(2000);
+*/
 
-  //set current tile as visited
-
-  //determine destination function
-
-  //go to destination
-}
-
-/*
- * tile condition fuction
- */
-while() {
-  if(Sensors.getRange() < ) {
+  forwardOneTile();
 }
 
 void loop(){
-  Serial.print("heading\t");
-  Serial.println(sensors.getHeading());
-  
-  Serial.print("Ultra Sound\t");
   Serial.println(sensors.getRange());
+  delay(500);
+}
 
-  Serial.print("Temperature Right\t");
-  Serial.println(sensors.getTemperatureRight());
-  
-  Serial.print("Temperature Left\t");
-  Serial.println(sensors.getTemperatureLeft());
-  
-  Serial.print("IR Left\t");
-  Serial.println(sensors.getIrDistance(DIST_LEFT_PIN, 1));
-  
-  Serial.print("IR Right\t");
-  Serial.println(sensors.getIrDistance(DIST_RIGHT_PIN, 1));
+void turnToBearing(float targetHeading){
+  float curHeading = sensors.getHeading();
+  Serial.println(curHeading);
+  while( abs(curHeading - targetHeading) > HEADING_TOLERANCE ){
+    motor.turnToHeading(curHeading, targetHeading);
+    delay(10);
+    curHeading = sensors.getHeading();
+    Serial.println(curHeading);
+  }
+  motor.stop();
+}
 
+void proceedTo(float heading){
+  turnToBearing(heading);
+  delay(1000);
+  forwardOneTile();
   delay(1000);
 }
+
+void forwardOneTile(){
+  float currentRange = sensors.getRange();
+
+  //Assume tiles from wall > 0 
+  int tilesFromWall = currentRange / 300;
+
+  Serial.println(tilesFromWall);
+  
+  float targetRange = (tilesFromWall - 1) * 300 + FORWARD_CLEARANCE;
+  float error = currentRange - targetRange;
+  while( abs(error) > FORWARD_TOLERANCE) {
+    motor.travelPower(error);
+    currentRange = sensors.getRange();
+    error = currentRange - targetRange;
+  }
+
+  motor.stop();
+}
+

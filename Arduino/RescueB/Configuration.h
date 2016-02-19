@@ -1,10 +1,23 @@
 #define DEBUGLEVEL  0 // 0 - no debug, 1 - basic, 5 - verbal
 #include "Arduino.h"
 
-#define NORTH 4.65
-#define SOUTH 1.67
-#define EAST 6.04
-#define WEST 3.29
+#define NORTH 1.16
+#define SOUTH 4.44
+#define EAST 3.18
+#define WEST 5.62
+
+#define HEADING_TOLERANCE 0.05
+#define FORWARD_TOLERANCE 5
+#define ROTATIONAL_SLOWING_DISTANCE 0.4
+#define MINIMUM_ROTATIONAL_POWER 225
+
+#define FORWARD_CLEARANCE 111
+
+#define FORWARD_SLOWING_DISTANCE 300
+#define MINIMUM_FORWARD_POWER 185
+
+// 255-minimum_foward_power / forward_slowing_distance
+#define FORWARD_SLOWING_CONSTANT 0.2333
 
 // MAP MAX WIDTH/HEIGHT must be smaller or less than 15, due to the problem of 4-bit integer
 #define MAP_MAX_WIDTH 10
@@ -68,7 +81,12 @@
 #define TIMER_SENSOR  200
 #define TIMER_DECISION  1000
 
-//determine wall distance
+// determine wall distance
 #define DETERMINE_WALL_DISTANCE   200
 
+// Motor pins
+#define E1  5
+#define M1  4
+#define E2  6
+#define M2  7
 

@@ -97,13 +97,8 @@ StackArray <Coordinate> Map::findPath(Coordinate start, Direction currentDirecti
   for(int j=0;j<mapWidth; j++){
         for(int k=0;k<mapHeight; k++){
           track[j][k].cost=255;
-<<<<<<< HEAD
-          track[j][k].prevTile.x = 15;
-          track[j][k].prevTile.y = 15;
-=======
           track[j][k].prevTile.x = UNDEF_TILE;
           track[j][k].prevTile.y = UNDEF_TILE;
->>>>>>> 6529a09697ba6c2240d12daaac2f14f5a156cd61
         }
   }
   track[start.x][start.y].cost = 0;
@@ -216,17 +211,12 @@ void Map::findAvailableTile(
 Coordinate Map::determineDestination(Coordinate start, backTrack track[MAP_MAX_WIDTH][MAP_MAX_HEIGHT]){
   unsigned char smallest = 150;
   Coordinate output;
-<<<<<<< HEAD
-  output.x = 15;
-  output.y = 15;
-  for(int y=0; y<mapHeight; y++){
-    for(int x=0; x<mapWidth; x++){
-=======
+
   output.x = UNDEF_TILE;
   output.y = UNDEF_TILE;
   for(char y=0; y<mapHeight; y++){
     for(char x=0; x<mapWidth; x++){
->>>>>>> 6529a09697ba6c2240d12daaac2f14f5a156cd61
+
       if (track[x][y].cost < smallest){
         if (start.x == x && start.y == y) continue;
         if (tiles[x][y].visits > 0) continue;
