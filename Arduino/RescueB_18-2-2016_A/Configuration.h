@@ -1,10 +1,11 @@
 #define DEBUGLEVEL  0 // 0 - no debug, 1 - basic, 5 - verbal
 #include "Arduino.h"
 
-#define NORTH 4.65
-#define SOUTH 1.67
-#define EAST 6.04
-#define WEST 3.29
+// On the map, positive Y always points to SOUTH
+#define MAP_NORTH 4.65
+#define MAP_SOUTH 1.67
+#define MAP_EAST 6.04
+#define MAP_WEST 3.29
 
 #define MAP_MAX_WIDTH 10
 #define MAP_MAX_HEIGHT 6
@@ -12,8 +13,8 @@
 #define  MAP_WIDTH    5
 #define  MAP_HEIGHT   3
 
-#define ENTRANCEX  3
-#define ENTRANCEY  1
+#define ENTRANCEX  0
+#define ENTRANCEY  0
 
 #define BLACK_THRESHOLD 50
 #define VICTIM_TEMP  28
@@ -69,5 +70,8 @@
 
 //determine wall distance
 #define DETERMINE_WALL_DISTANCE   200
+
+//Heading Tolerance
+#define HEADING_TOLERANCE   0.25
 
 

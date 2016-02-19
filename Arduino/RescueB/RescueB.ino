@@ -9,7 +9,6 @@
 #include "Sensors.h"
 #include "Map.h"
 #include <Wire.h>
-#include <MemoryFree.h>
 
 Sensors sensors;
 int mode = 1;
@@ -40,12 +39,44 @@ void setup(){
   //Map::debugMap(8,4, 0, 0);
 }
 
+/*
+ * main Algorithm
+ */
+while(//all tiles visited and back at start) {
+  //tile condition fuction
+
+  //set current tile as visited
+
+  //determine destination function
+
+  //go to destination
+}
+
+/*
+ * tile condition fuction
+ */
+while() {
+  if(Sensors.getRange() < ) {
+}
+
 void loop(){
   Serial.print("heading\t");
   Serial.println(sensors.getHeading());
-
+  
+  Serial.print("Ultra Sound\t");
   Serial.println(sensors.getRange());
+
+  Serial.print("Temperature Right\t");
   Serial.println(sensors.getTemperatureRight());
   
+  Serial.print("Temperature Left\t");
+  Serial.println(sensors.getTemperatureLeft());
+  
+  Serial.print("IR Left\t");
+  Serial.println(sensors.getIrDistance(DIST_LEFT_PIN, 1));
+  
+  Serial.print("IR Right\t");
+  Serial.println(sensors.getIrDistance(DIST_RIGHT_PIN, 1));
+
   delay(1000);
 }
