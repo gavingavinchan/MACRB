@@ -86,6 +86,9 @@ StackArray <Coordinate> Map::findPath(Coordinate start, Direction currentDirecti
   Coordinate n; //next
   boolean V[MAP_MAX_WIDTH][MAP_MAX_HEIGHT]; // Visited Set
   backTrack track[MAP_MAX_WIDTH][MAP_MAX_HEIGHT];
+
+  Serial.println(F("find path"));
+  
   for(int i=0;i<mapWidth; i++)
       for(int j=0;j<mapHeight; j++)
         V[i][j] = false;
@@ -94,8 +97,13 @@ StackArray <Coordinate> Map::findPath(Coordinate start, Direction currentDirecti
   for(int j=0;j<mapWidth; j++){
         for(int k=0;k<mapHeight; k++){
           track[j][k].cost=255;
+<<<<<<< HEAD
           track[j][k].prevTile.x = 15;
           track[j][k].prevTile.y = 15;
+=======
+          track[j][k].prevTile.x = UNDEF_TILE;
+          track[j][k].prevTile.y = UNDEF_TILE;
+>>>>>>> 6529a09697ba6c2240d12daaac2f14f5a156cd61
         }
   }
   track[start.x][start.y].cost = 0;
@@ -105,8 +113,8 @@ StackArray <Coordinate> Map::findPath(Coordinate start, Direction currentDirecti
   while(!Q.isEmpty()){
     t = Q.pop();
     
-    int x = t.x;
-    int y = t.y;
+    unsigned char x = t.x;
+    unsigned char y = t.y;
     
     findAvailableTile(x,y,North,V,track,Q);
     findAvailableTile(x,y,South,V,track,Q);
@@ -133,13 +141,13 @@ StackArray <Coordinate> Map::findPath(Coordinate start, Direction currentDirecti
 
    Coordinate destination;
    destination = determineDestination(start, track);
-   if(destination.x<0) destination = entrance;
+   if(destination.x==UNDEF_TILE) destination = entrance;
 #if DEBUGLEVEL > 5   
    printCoordinate(destination);
 #endif
 
-  int evalX = destination.x;
-  int evalY = destination.y;
+  unsigned char evalX = destination.x;
+  unsigned char evalY = destination.y;
   
   StackArray <Coordinate> St; //Stack
   St.push(destination);
@@ -173,7 +181,7 @@ void Map::findAvailableTile(
       destx=cx-1; break;
   }
   
-  if (destx<0 || desty<0 || destx>mapWidth-1 || desty>mapHeight-1) return;
+  if (destx==UNDEF_TILE || desty==UNDEF_TILE || destx>mapWidth-1 || desty>mapHeight-1) return;
 
   if (tiles[cx][cy].hasWall(dir) || V[destx][desty]) return;
 
@@ -199,17 +207,26 @@ void Map::findAvailableTile(
   dTrack.prevTile.x = cx;
   dTrack.prevTile.y = cy;
   dTrack.facing=dir;
-  dTrack.cost = cTrack.cost + tiles[destx][desty].type + orientCost;
+  int cost = cTrack.cost + tiles[destx][desty].type + orientCost;
+  if (cost>250) dTrack.cost = 250;
+  else dTrack.cost = cost;
   track[destx][desty] = dTrack;
 }
 
 Coordinate Map::determineDestination(Coordinate start, backTrack track[MAP_MAX_WIDTH][MAP_MAX_HEIGHT]){
-  int smallest = 888;
+  unsigned char smallest = 150;
   Coordinate output;
+<<<<<<< HEAD
   output.x = 15;
   output.y = 15;
   for(int y=0; y<mapHeight; y++){
     for(int x=0; x<mapWidth; x++){
+=======
+  output.x = UNDEF_TILE;
+  output.y = UNDEF_TILE;
+  for(char y=0; y<mapHeight; y++){
+    for(char x=0; x<mapWidth; x++){
+>>>>>>> 6529a09697ba6c2240d12daaac2f14f5a156cd61
       if (track[x][y].cost < smallest){
         if (start.x == x && start.y == y) continue;
         if (tiles[x][y].visits > 0) continue;
@@ -231,16 +248,34 @@ void Map::printCoordinate(Coordinate coor){
 }
 
 void Map::addVisit(Coordinate coor){
-  tiles[coor.x][coor.y].visits++;
+  char visits = tiles[coor.x][coor.y].visits + 1;
+  visits < 15 ? tiles[coor.x][coor.y].visits = visits : visits = 15;
 }
 
-void Map::debugMap(int w, int h, int ex, int ey){
+void Map::setBlackTile(Coordinate coor){
+  tiles[coor.x][coor.y].type = TileType::black;
+  tiles[coor.x][coor.y].visits = 15;
+}
+
+void Map::setVictim(Coordinate coor){
+  tiles[coor.x][coor.y].type = TileType::victim;
+}
+
+boolean Map::hasVictim(Coordinate coor){
+  return tiles[coor.x][coor.y].type == TileType::victim;
+}
+
+void Map::debugMap(unsigned char w, unsigned char h, unsigned char ex, unsigned char ey){
   Coordinate start;
   Direction dir;
   Map rmap = Map(w, h);
   start.x = ex;
   start.y = ey;
-  
+
+  rmap.tiles[1][0].type = TileType::black;
+  rmap.tiles[1][0].visits = 15;
+  rmap.tiles[4][0].type = TileType::black;
+  rmap.tiles[4][0].visits = 15;
   rmap.setWall(0, 0,East);
   rmap.setWall(3, 0,East);
   rmap.setWall(7, 0,South);
@@ -272,7 +307,7 @@ void Map::debugMap(int w, int h, int ex, int ey){
     Coordinate entrance;
     entrance.x = ex;
     entrance.y = ey;
-    
+
     StackArray<Coordinate> pathStack = rmap.findPath(start, dir, entrance);
     rmap.tiles[start.x][start.y].visits++;  
  
