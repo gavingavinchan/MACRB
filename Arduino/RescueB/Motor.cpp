@@ -49,10 +49,10 @@ void Motor::turnToHeading(float currentHeading, float targetHeading){
   float error = currentHeading-targetHeading;
   if(error > PI) {
     error -= 2*PI;
-    Serial.println("error > PI");
+    //Serial.println("error > PI");
   } else if(error < -PI) {
     error += 2*PI;
-    Serial.println("error < -PI");
+    //Serial.println("error < -PI");
   }
   // Linear - Calculate Power
   // Determine direction of rotation
@@ -74,11 +74,6 @@ int Motor::rotationalPower(float error) {
 }
 
 void Motor::travelPower(float error) {
-  Serial.print(FORWARD_SLOWING_CONSTANT);
-  Serial.print("error:\t");
-  Serial.print(error);
-  Serial.print("\t");
-  Serial.print("power:\t");
   int power = error * FORWARD_SLOWING_CONSTANT + 
     (error>0? MINIMUM_FORWARD_POWER: -MINIMUM_FORWARD_POWER);
 
@@ -87,7 +82,6 @@ void Motor::travelPower(float error) {
   }else if (power<-255){
     power = -255;
   }
-  Serial.println(power);
   motorPower(power,power);
 }
 

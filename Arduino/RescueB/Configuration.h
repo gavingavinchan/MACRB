@@ -1,10 +1,10 @@
 #define DEBUGLEVEL  0 // 0 - no debug, 1 - basic, 5 - verbal
 #include "Arduino.h"
 
-#define NORTH 1.16
-#define SOUTH 4.44
-#define EAST 3.18
-#define WEST 5.62
+#define MAP_NORTH 1.16
+#define MAP_SOUTH 4.44
+#define MAP_EAST 3.18
+#define MAP_WEST 5.62
 
 #define HEADING_TOLERANCE 0.05
 #define FORWARD_TOLERANCE 5
@@ -23,11 +23,11 @@
 #define MAP_MAX_WIDTH 10
 #define MAP_MAX_HEIGHT 6
 
-#define  MAP_WIDTH    5
+#define  MAP_WIDTH    4
 #define  MAP_HEIGHT   3
 
 #define ENTRANCEX  3
-#define ENTRANCEY  1
+#define ENTRANCEY  2
 
 #define BLACK_THRESHOLD 50
 #define VICTIM_TEMP  28
@@ -58,8 +58,8 @@
 #define Compass_Scale_Setting  0x00 << 5
 
 // Ir Distance
-#define DIST_LEFT_PIN  A0
-#define DIST_RIGHT_PIN  A1
+#define DIST_LEFT_PIN  A1
+#define DIST_RIGHT_PIN  A0
 
 // Ground Gray Sensor
 #define GRAY_PIN  3
