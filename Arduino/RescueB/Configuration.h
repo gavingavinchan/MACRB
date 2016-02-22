@@ -58,8 +58,10 @@
 #define Compass_Scale_Setting  0x00 << 5
 
 // Ir Distance
-#define DIST_LEFT_PIN  A1
-#define DIST_RIGHT_PIN  A0
+#define DIST_FL_PIN  A0
+#define DIST_FR_PIN  A1
+#define DIST_BL_PIN  A2
+#define DIST_BR_PIN  A3
 
 // Ground Gray Sensor
 #define GRAY_PIN  3

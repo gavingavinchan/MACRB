@@ -81,11 +81,13 @@ void setup(){
     
     robotPosition = next;
   }while(true);
-  
+
 }
 
 void loop(){
   Serial.println(sensors.getHeading());
+  delay(500);
+  printAllSensorValues();
   delay(500);
 }
 
@@ -106,10 +108,14 @@ void turnToBearing(float targetHeading){
 }
 
 void printAllSensorValues(){
-  Serial.println("IRL\tIRR\tRan\tCom");
-  Serial.print(sensors.getIrDistance(DIST_LEFT_PIN));
+  Serial.println("IR_FL\tIR_FR\tIR_BL\tIR_BR\tRan\tCom");
+  Serial.print(sensors.getIrDistance(DIST_FL_PIN));
   Serial.print("\t");
-  Serial.print(sensors.getIrDistance(DIST_RIGHT_PIN));
+  Serial.print(sensors.getIrDistance(DIST_FR_PIN));
+  Serial.print("\t");
+  Serial.print(sensors.getIrDistance(DIST_BL_PIN));
+  Serial.print("\t");
+  Serial.print(sensors.getIrDistance(DIST_BR_PIN));
   Serial.print("\t");
   Serial.print(sensors.getRange());
   Serial.print("\t");
@@ -153,8 +159,8 @@ void forwardOneTile(){
 
 void setWall(Map &cmap, Coordinate currentPos, Direction currentDirection) {
   boolean FWall = false, LWall = false, RWall = false;
-  float irl = sensors.getIrDistance(DIST_LEFT_PIN);
-  float irr = sensors.getIrDistance(DIST_RIGHT_PIN);
+  float irl = (sensors.getIrDistance(DIST_FL_PIN)+sensors.getIrDistance(DIST_BL_PIN))/2;
+  float irr = (sensors.getIrDistance(DIST_FR_PIN)+sensors.getIrDistance(DIST_BR_PIN))/2;
   if(sensors.getRange() < DETERMINE_WALL_DISTANCE) {
     FWall = true;
   }
