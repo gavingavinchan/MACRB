@@ -12,14 +12,14 @@
 #define FORWARD_CLEARANCE 111
 
 #define FORWARD_SLOWING_DISTANCE 300
-#define MINIMUM_FORWARD_POWER 185
+#define MINIMUM_FORWARD_POWER 120
 // 255-minimum_foward_power / forward_slowing_distance
-#define FORWARD_SLOWING_CONSTANT 0.2333
+#define FORWARD_SLOWING_CONSTANT 0.30
 
 #define ROTATIONAL_SLOWING_DISTANCE 1
-#define MINIMUM_ROTATIONAL_POWER 150
+#define MINIMUM_ROTATIONAL_POWER 140
 // 255 - minimum_rotational_power / rotation_slowing_distance
-#define ROTATIONAL_SLOWING_CONSTANT 105
+#define ROTATIONAL_SLOWING_CONSTANT 115
 
 // MAP MAX WIDTH/HEIGHT must be smaller or less than 15, due to the problem of 4-bit integer
 #define MAP_MAX_WIDTH 10

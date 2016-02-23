@@ -40,8 +40,8 @@ void setup(){
   
   delay(1000);
 
-  // doRescueTask();
-  testRotation2();
+  doRescueTask();
+  //testRotationLeft();
 }
 
 void loop(){
@@ -54,14 +54,16 @@ boolean frontWall(){
 }
 
 boolean leftWall () {
-  return sensors.getIrDistance(DIST_FL_PIN,3)<DETERMINE_WALL_DISTANCE;
+  float dist = sensors.getIrDistance(DIST_FL_PIN,3);
+  return dist<DETERMINE_WALL_DISTANCE && dist>0;
 }
 
 boolean rightWall() {
-  return sensors.getIrDistance(DIST_FR_PIN,3)<DETERMINE_WALL_DISTANCE;
+  float dist = sensors.getIrDistance(DIST_FR_PIN,3);
+  return dist<DETERMINE_WALL_DISTANCE && dist>0;
 }
 
-void testRotation2(){
+void testRotationRight(){
   // determine to use left or right sensors
   char fpin, bpin;
   boolean trustTheCompass = false;
@@ -110,6 +112,60 @@ void testRotation2(){
   motor.stop();
 }
 
+void testUTurn(){
+  testRotationLeft();
+  testRotationLeft();
+}
+
+void testRotationLeft(){
+  // determine to use left or right sensors
+  char fpin, bpin;
+  boolean trustTheCompass = false;
+  if (frontWall()){
+    fpin = DIST_BR_PIN;
+    bpin = DIST_FR_PIN;
+    Serial.println("use Right");
+  }else if(leftWall() || rightWall()){
+    Serial.println("trust the compass");
+    trustTheCompass = true;
+  }else{
+    fpin = DIST_FL_PIN;
+    bpin = DIST_BL_PIN;
+    Serial.println("use Left");
+  }
+  // get current heading and +90 degrees
+  float heading = sensors.getHeading() - PI/2;
+  heading = heading < 0 ? heading + 2*PI: heading;
+  turnToBearing(heading);
+  motor.stop();
+  if(trustTheCompass) {
+    return;
+  }
+  delay(1000);
+  
+  float irfl = sensors.getIrDistance(fpin, 1);
+  float irbl = sensors.getIrDistance(bpin, 1);
+  if (irfl<0) irfl = 500;
+  if (irbl<0) irbl = 500;
+  float error = irfl - irbl;
+  while(abs(error)>1){
+    if(error>0){
+      motor.left(160, 160);
+    }
+    else{
+      motor.right(160, 160);
+    }
+    
+    delay(20);
+    irfl = sensors.getIrDistance(fpin, 1);
+    irbl = sensors.getIrDistance(bpin, 1);
+    if (irfl<0) irfl = 500;
+    if (irbl<0) irbl = 500;
+    error =   (irfl - irbl);
+  }
+  motor.stop();
+}
+
 void doRescueTask(){
   // Initalize map and global variable on the task
   Map cmap(MAP_WIDTH, MAP_HEIGHT);
@@ -123,7 +179,7 @@ void doRescueTask(){
     printAllSensorValues();
     setWall(cmap, robotPosition, robotOrientation);
     cmap.addVisit(robotPosition);
-    //cmap.printMap();
+    cmap.printMap();
     StackArray<Coordinate> pathStack = cmap.findPath(robotPosition, robotOrientation, entrance);
     if (pathStack.count()<=1) break;
     pathStack.pop(); // current position; no need
@@ -132,15 +188,16 @@ void doRescueTask(){
     cmap.printCoordinate(next);
     Serial.println();
 
+    Direction nextDir;
     if (next.x > robotPosition.x){
       // Next is on the East
-      robotOrientation = East;
+      nextDir = East;
     }else if (next.y > robotPosition.y){
-      robotOrientation = South;
+      nextDir = South;
     }else if (next.x < robotPosition.x){
-      robotOrientation = West;
+      nextDir = West;
     }else if (next.y < robotPosition.y){
-      robotOrientation = North;
+      nextDir = North;
     }else{
       // Finished
       
@@ -148,9 +205,10 @@ void doRescueTask(){
     }
     
     while(Serial.read()!='\n'){}
-    proceedTo(robotOrientation);
+    proceedTo(robotOrientation, nextDir);
     
     robotPosition = next;
+    robotOrientation = nextDir;
   }while(true);
 
   Serial.println("GOAL");
@@ -185,7 +243,9 @@ void printAllSensorValues(){
   Serial.println();
 }
 
-void proceedTo(Direction dir){
+
+// Absolute bearing proceed to
+void proceedToA(Direction orig, Direction dir){
   float heading = MAP_NORTH;
   switch(dir){
     case South: heading = MAP_SOUTH; break;
@@ -197,6 +257,43 @@ void proceedTo(Direction dir){
   delay(500);
   forwardOneTile();
   delay(500);
+}
+
+// Non absolute bearing procced to
+void proceedTo(Direction orig, Direction dir){
+  switch(orig){
+    case North:
+      switch(dir){
+        case South: testUTurn(); break;
+        case West: testRotationLeft(); break;
+        case East: testRotationRight(); break;
+      }
+      break;
+    case East:
+      switch(dir){
+        case South: testRotationRight(); break;
+        case West: testUTurn(); break;
+        case North: testRotationLeft(); break;
+      }
+      break;
+    case South:
+      switch(dir){
+        case North: testUTurn(); break;
+        case West: testRotationRight(); break;
+        case East: testRotationLeft(); break;
+      }
+      break;
+    case West:
+      switch(dir){
+        case South: testRotationLeft(); break;
+        case North: testRotationRight(); break;
+        case East: testUTurn(); break;
+      }
+      break;
+  }
+  delay(1000);
+  forwardOneTile();
+  delay(1000);
 }
 
 void forwardOneTile(){
@@ -220,15 +317,13 @@ void forwardOneTile(){
 
 void setWall(Map &cmap, Coordinate currentPos, Direction currentDirection) {
   boolean FWall = false, LWall = false, RWall = false;
-  float irl = (sensors.getIrDistance(DIST_FL_PIN)+sensors.getIrDistance(DIST_BL_PIN))/2;
-  float irr = (sensors.getIrDistance(DIST_FR_PIN)+sensors.getIrDistance(DIST_BR_PIN))/2;
-  if(sensors.getRange() < DETERMINE_WALL_DISTANCE) {
+  if(frontWall()) {
     FWall = true;
   }
-  if(irl < DETERMINE_WALL_DISTANCE && irl > 0) {
+  if(leftWall()) {
     LWall = true;
   }
-  if(irr < DETERMINE_WALL_DISTANCE && irr > 0) {
+  if(rightWall()) {
     RWall = true;
   }
   
