@@ -41,34 +41,71 @@ void setup(){
   delay(1000);
 
   // doRescueTask();
+  testRotation2();
 }
 
 void loop(){
-  Serial.println(sensors.getHeading());
-  delay(500);
   printAllSensorValues();
   delay(500);
 }
 
+boolean frontWall(){
+  return sensors.getRange()<DETERMINE_WALL_DISTANCE;
+}
+
+boolean leftWall () {
+  return sensors.getIrDistance(DIST_FL_PIN,3)<DETERMINE_WALL_DISTANCE;
+}
+
+boolean rightWall() {
+  return sensors.getIrDistance(DIST_FR_PIN,3)<DETERMINE_WALL_DISTANCE;
+}
+
 void testRotation2(){
+  // determine to use left or right sensors
+  char fpin, bpin;
+  boolean trustTheCompass = false;
+  if (frontWall()){
+    fpin = DIST_FL_PIN;
+    bpin = DIST_BL_PIN;
+    Serial.println("use Left");
+  }else if(leftWall() || rightWall()){
+    Serial.println("trust the compass");
+    trustTheCompass = true;
+  }else{
+    fpin = DIST_BR_PIN;
+    bpin = DIST_FR_PIN;
+    Serial.println("use Right");
+  }
   // get current heading and +90 degrees
   float heading = sensors.getHeading() + PI/2;
   heading = heading > 2*PI ? heading - 2*PI: heading;
   turnToBearing(heading);
-
-  float irfl = sensors.getIrDistance(DIST_FL_PIN, 1);
-  float irbl = sensors.getIrDistance(DIST_BL_PIN, 1);
+  motor.stop();
+  if(trustTheCompass) {
+    return;
+  }
+  delay(1000);
+  
+  float irfl = sensors.getIrDistance(fpin, 1);
+  float irbl = sensors.getIrDistance(bpin, 1);
+  if (irfl<0) irfl = 500;
+  if (irbl<0) irbl = 500;
   float error = irfl - irbl;
   while(abs(error)>1){
     if(error>0){
-      motor.left(180, 180);
+      motor.left(160, 160);
     }
     else{
-      motor.right(180, 180);
+      motor.right(160, 160);
     }
-    irfl = sensors.getIrDistance(DIST_FL_PIN, 1);
-    irbl = sensors.getIrDistance(DIST_BL_PIN, 1);
-    error = irfl - irbl;
+    
+    delay(20);
+    irfl = sensors.getIrDistance(fpin, 1);
+    irbl = sensors.getIrDistance(bpin, 1);
+    if (irfl<0) irfl = 500;
+    if (irbl<0) irbl = 500;
+    error =   (irfl - irbl);
   }
   motor.stop();
 }
