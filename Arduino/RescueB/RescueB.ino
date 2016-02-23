@@ -40,7 +40,41 @@ void setup(){
   
   delay(1000);
 
-// Initalize map and global variable on the task
+  // doRescueTask();
+}
+
+void loop(){
+  Serial.println(sensors.getHeading());
+  delay(500);
+  printAllSensorValues();
+  delay(500);
+}
+
+void testRotation2(){
+  // get current heading and +90 degrees
+  float heading = sensors.getHeading() + PI/2;
+  heading = heading > 2*PI ? heading - 2*PI: heading;
+  turnToBearing(heading);
+
+  float irfl = sensors.getIrDistance(DIST_FL_PIN, 1);
+  float irbl = sensors.getIrDistance(DIST_BL_PIN, 1);
+  float error = irfl - irbl;
+  while(abs(error)>1){
+    if(error>0){
+      motor.left(180, 180);
+    }
+    else{
+      motor.right(180, 180);
+    }
+    irfl = sensors.getIrDistance(DIST_FL_PIN, 1);
+    irbl = sensors.getIrDistance(DIST_BL_PIN, 1);
+    error = irfl - irbl;
+  }
+  motor.stop();
+}
+
+void doRescueTask(){
+  // Initalize map and global variable on the task
   Map cmap(MAP_WIDTH, MAP_HEIGHT);
   entrance.x = ENTRANCEX;
   entrance.y = ENTRANCEY;
@@ -72,7 +106,7 @@ void setup(){
       robotOrientation = North;
     }else{
       // Finished
-      Serial.println("GOAL");
+      
       break;
     }
     
@@ -82,17 +116,7 @@ void setup(){
     robotPosition = next;
   }while(true);
 
-}
-
-void loop(){
-  Serial.println(sensors.getHeading());
-  delay(500);
-  printAllSensorValues();
-  delay(500);
-}
-
-void testMovement(){
-  
+  Serial.println("GOAL");
 }
 
 void turnToBearing(float targetHeading){

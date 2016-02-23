@@ -66,7 +66,7 @@ void Motor::turnToHeading(float currentHeading, float targetHeading){
 
 
 int Motor::rotationalPower(float error) {
-  int x = abs(error)/ROTATIONAL_SLOWING_DISTANCE*(255-MINIMUM_ROTATIONAL_POWER) + MINIMUM_ROTATIONAL_POWER;
+  int x = abs(error) * ROTATIONAL_SLOWING_CONSTANT + MINIMUM_ROTATIONAL_POWER;
   if(x>255) { //if bigger than maximun voltage power
     x = 255;
   }
