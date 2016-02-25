@@ -67,8 +67,8 @@ void Motor::turnToHeading(float currentHeading, float targetHeading){
 
 int Motor::rotationalPower(float error) {
   int x = abs(error) * ROTATIONAL_SLOWING_CONSTANT + MINIMUM_ROTATIONAL_POWER;
-  if(x>255) { //if bigger than maximun voltage power
-    x = 255;
+  if(x>MAXIMUM_ROTATIONAL_POWER) { //if bigger than maximun voltage power
+    x = MAXIMUM_ROTATIONAL_POWER;
   }
   return x;
 }
@@ -77,11 +77,15 @@ void Motor::travelPower(float error) {
   int power = error * FORWARD_SLOWING_CONSTANT + 
     (error>0? MINIMUM_FORWARD_POWER: -MINIMUM_FORWARD_POWER);
 
-  if(power>255) {
-    power = 255;
-  }else if (power<-255){
-    power = -255;
+  if(power>MAXIMUM_FORWARD_POWER) {
+    power = MAXIMUM_FORWARD_POWER;
+  }else if (power<-MAXIMUM_FORWARD_POWER){
+    power = -MAXIMUM_FORWARD_POWER;
   }
+  Serial.print("Travel Power: \t");
+  Serial.print(error);
+  Serial.print("\t");
+  Serial.println(power);
   motorPower(power,power);
 }
 

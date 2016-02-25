@@ -40,7 +40,7 @@ void setup(){
   
   delay(1000);
 
-  doRescueTask();
+  //doRescueTask();
   //testRotationLeft();
 }
 
@@ -227,7 +227,7 @@ void turnToBearing(float targetHeading){
 }
 
 void printAllSensorValues(){
-  Serial.println("IR_FL\tIR_FR\tIR_BL\tIR_BR\tRan\tCom");
+  Serial.println("IR_FL\tIR_FR\tIR_BL\tIR_BR\tRan\tCom\tTempLeft\tTempRight\tCGPGrey");
   Serial.print(sensors.getIrDistance(DIST_FL_PIN));
   Serial.print("\t");
   Serial.print(sensors.getIrDistance(DIST_FR_PIN));
@@ -240,12 +240,18 @@ void printAllSensorValues(){
   Serial.print("\t");
   Serial.print(sensors.getHeading());
   Serial.print("\t");
+  Serial.print(sensors.getTemperatureLeft());
+  Serial.print("\t\t");
+  Serial.print(sensors.getTemperatureRight());
+  Serial.print("\t\t");
+  Serial.print(sensors.getGray());
+  Serial.print("\t");
   Serial.println();
 }
 
 
 // Absolute bearing proceed to
-void proceedToA(Direction orig, Direction dir){
+void proceedTo(Direction orig, Direction dir){
   float heading = MAP_NORTH;
   switch(dir){
     case South: heading = MAP_SOUTH; break;
@@ -260,7 +266,7 @@ void proceedToA(Direction orig, Direction dir){
 }
 
 // Non absolute bearing procced to
-void proceedTo(Direction orig, Direction dir){
+void proceedToNonA(Direction orig, Direction dir){
   switch(orig){
     case North:
       switch(dir){

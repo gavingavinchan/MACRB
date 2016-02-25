@@ -74,7 +74,7 @@ float Sensors::getHeading(){
   Serial.println();
 #endif
 
-  float heading = atan2(yaxis, xaxis) + 0.0457;
+  float heading = atan2(yaxis - HARD_IRON_Y, xaxis - HARD_IRON_X) + 0.0457;
   
   
   if(heading < 0)
