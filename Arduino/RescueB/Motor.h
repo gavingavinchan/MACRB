@@ -13,13 +13,13 @@ class Motor{
     void motorPower(int lpower, int rpower);
     
     void stop();
-    void left(char a,char b);
-    void right(char a,char b);
+    void brake();
 
     // Determines the power required for the motor to turn to the specific heading, it does not stop the car when it arrives
     void turnToHeading(float currentHeading, float targetHeading);
     void travelPower(float error);
   private:
+    int lastLpower = 0, lastRpower = 0;
     int rotationalPower(float error);
 };
 

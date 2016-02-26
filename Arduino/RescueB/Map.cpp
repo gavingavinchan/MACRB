@@ -231,3 +231,16 @@ void Map::printCoordinate(Coordinate coor){
 void Map::addVisit(Coordinate coor){
   tiles[coor.x][coor.y].visits++;
 }
+
+boolean Map::hasVictim(Coordinate coor){
+  return tiles[coor.x][coor.y].type == victim;
+}
+
+void Map::setVictim(Coordinate coor){
+  tiles[coor.x][coor.y].type = victim;
+}
+
+void Map::setBlackTile(Coordinate coor){
+  tiles[coor.x][coor.y].type = black;
+}
+

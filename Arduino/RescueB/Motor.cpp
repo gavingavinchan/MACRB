@@ -19,6 +19,14 @@ void Motor::stop() {
   analogWrite(E2,0);
 }
 
+void Motor::brake(){
+  int lpower = lastLpower > 0 ? -255 : 255;
+  int rpower = lastRpower > 0 ? -255: 255;
+  motorPower(lpower, rpower);
+  delay(20);
+  stop();
+}
+
 void Motor::motorPower(int lpower, int rpower) {
   if(lpower < 0) digitalWrite(M1, LOW);
   else digitalWrite(M1, HIGH);
@@ -27,22 +35,9 @@ void Motor::motorPower(int lpower, int rpower) {
     
   analogWrite(E1, abs(lpower));
   analogWrite(E2, abs(rpower));
+  lastLpower = lpower;
+  lastRpower = rpower;
 }
-
-void Motor::left(char a,char b) {
-  digitalWrite(M1, LOW);
-  digitalWrite(M2, HIGH);
-  analogWrite(E1, a);
-  analogWrite(E2, b);
-}
-
-void Motor::right(char a,char b) {
-  digitalWrite(M1, HIGH);
-  digitalWrite(M2, LOW);
-  analogWrite(E1, a);
-  analogWrite(E2, b);
-}
-
 
 void Motor::turnToHeading(float currentHeading, float targetHeading){
     // determine error
@@ -56,14 +51,13 @@ void Motor::turnToHeading(float currentHeading, float targetHeading){
   }
   // Linear - Calculate Power
   // Determine direction of rotation
+  int power = rotationalPower(error);
   if(error>0){
-    left(rotationalPower(error),rotationalPower(error));
+    motorPower(-power, power);
   }else{
-    right(rotationalPower(error),rotationalPower(error));
+    motorPower(power, -power);
   }
 }
-
-
 
 int Motor::rotationalPower(float error) {
   int x = abs(error) * ROTATIONAL_SLOWING_CONSTANT + MINIMUM_ROTATIONAL_POWER;

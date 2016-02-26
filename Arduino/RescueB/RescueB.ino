@@ -40,8 +40,7 @@ void setup(){
   
   delay(1000);
 
-  //doRescueTask();
-  //testRotationLeft();
+  doRescueTask();
 }
 
 void loop(){
@@ -63,107 +62,11 @@ boolean rightWall() {
   return dist<DETERMINE_WALL_DISTANCE && dist>0;
 }
 
-void testRotationRight(){
-  // determine to use left or right sensors
-  char fpin, bpin;
-  boolean trustTheCompass = false;
-  if (frontWall()){
-    fpin = DIST_FL_PIN;
-    bpin = DIST_BL_PIN;
-    Serial.println("use Left");
-  }else if(leftWall() || rightWall()){
-    Serial.println("trust the compass");
-    trustTheCompass = true;
-  }else{
-    fpin = DIST_BR_PIN;
-    bpin = DIST_FR_PIN;
-    Serial.println("use Right");
+boolean blackTile() {
+  if(sensors.getGray()>BLACK_THRESHOLD) {
+    return true;
   }
-  // get current heading and +90 degrees
-  float heading = sensors.getHeading() + PI/2;
-  heading = heading > 2*PI ? heading - 2*PI: heading;
-  turnToBearing(heading);
-  motor.stop();
-  if(trustTheCompass) {
-    return;
-  }
-  delay(1000);
-  
-  float irfl = sensors.getIrDistance(fpin, 1);
-  float irbl = sensors.getIrDistance(bpin, 1);
-  if (irfl<0) irfl = 500;
-  if (irbl<0) irbl = 500;
-  float error = irfl - irbl;
-  while(abs(error)>1){
-    if(error>0){
-      motor.left(160, 160);
-    }
-    else{
-      motor.right(160, 160);
-    }
-    
-    delay(20);
-    irfl = sensors.getIrDistance(fpin, 1);
-    irbl = sensors.getIrDistance(bpin, 1);
-    if (irfl<0) irfl = 500;
-    if (irbl<0) irbl = 500;
-    error =   (irfl - irbl);
-  }
-  motor.stop();
-}
-
-void testUTurn(){
-  testRotationLeft();
-  testRotationLeft();
-}
-
-void testRotationLeft(){
-  // determine to use left or right sensors
-  char fpin, bpin;
-  boolean trustTheCompass = false;
-  if (frontWall()){
-    fpin = DIST_BR_PIN;
-    bpin = DIST_FR_PIN;
-    Serial.println("use Right");
-  }else if(leftWall() || rightWall()){
-    Serial.println("trust the compass");
-    trustTheCompass = true;
-  }else{
-    fpin = DIST_FL_PIN;
-    bpin = DIST_BL_PIN;
-    Serial.println("use Left");
-  }
-  // get current heading and +90 degrees
-  float heading = sensors.getHeading() - PI/2;
-  heading = heading < 0 ? heading + 2*PI: heading;
-  turnToBearing(heading);
-  motor.stop();
-  if(trustTheCompass) {
-    return;
-  }
-  delay(1000);
-  
-  float irfl = sensors.getIrDistance(fpin, 1);
-  float irbl = sensors.getIrDistance(bpin, 1);
-  if (irfl<0) irfl = 500;
-  if (irbl<0) irbl = 500;
-  float error = irfl - irbl;
-  while(abs(error)>1){
-    if(error>0){
-      motor.left(160, 160);
-    }
-    else{
-      motor.right(160, 160);
-    }
-    
-    delay(20);
-    irfl = sensors.getIrDistance(fpin, 1);
-    irbl = sensors.getIrDistance(bpin, 1);
-    if (irfl<0) irfl = 500;
-    if (irbl<0) irbl = 500;
-    error =   (irfl - irbl);
-  }
-  motor.stop();
+  return false;
 }
 
 void doRescueTask(){
@@ -205,7 +108,38 @@ void doRescueTask(){
     }
     
     while(Serial.read()!='\n'){}
-    proceedTo(robotOrientation, nextDir);
+
+    float heading = MAP_NORTH;
+    switch(nextDir){
+      case South: heading = MAP_SOUTH; break;
+      case East: heading = MAP_EAST; break;
+      case West: heading = MAP_WEST; break;
+    }
+    
+    turnToBearing(heading);
+    delay(200);
+
+    if (!cmap.hasVictim(robotPosition)){
+      int vict = detectVictim();
+      // base on vict value to see if victim is found or not
+      Serial.print("Victim:       ");
+      Serial.println(vict);
+    }
+
+    delay(200);
+    if(forwardOneTile()) {
+      cmap.setBlackTile(next);
+      robotOrientation = nextDir;
+      continue;
+    }
+    if (!cmap.hasVictim(next)){
+      int vict = detectVictim();
+      // base on vict value to see if victim is found or not
+      Serial.print("Victim:       ");
+      Serial.println(vict);
+    }
+
+    delay(500);
     
     robotPosition = next;
     robotOrientation = nextDir;
@@ -223,7 +157,7 @@ void turnToBearing(float targetHeading){
     curHeading = sensors.getHeading();
     //Serial.println(curHeading);
   }
-  motor.stop();
+  motor.brake();
 }
 
 void printAllSensorValues(){
@@ -265,46 +199,14 @@ void proceedTo(Direction orig, Direction dir){
   delay(500);
 }
 
-// Non absolute bearing procced to
-void proceedToNonA(Direction orig, Direction dir){
-  switch(orig){
-    case North:
-      switch(dir){
-        case South: testUTurn(); break;
-        case West: testRotationLeft(); break;
-        case East: testRotationRight(); break;
-      }
-      break;
-    case East:
-      switch(dir){
-        case South: testRotationRight(); break;
-        case West: testUTurn(); break;
-        case North: testRotationLeft(); break;
-      }
-      break;
-    case South:
-      switch(dir){
-        case North: testUTurn(); break;
-        case West: testRotationRight(); break;
-        case East: testRotationLeft(); break;
-      }
-      break;
-    case West:
-      switch(dir){
-        case South: testRotationLeft(); break;
-        case North: testRotationRight(); break;
-        case East: testUTurn(); break;
-      }
-      break;
-  }
-  delay(1000);
-  forwardOneTile();
-  delay(1000);
-}
+// return true if successfully move to next
+// false if a black tile is detected
+boolean forwardOneTile(){
+  boolean blackDetected = false;
+  float initialRange = sensors.getRange();
 
-void forwardOneTile(){
-  float currentRange = sensors.getRange();
-
+  float currentRange = initialRange;
+  
   //Assume tiles from wall > 0 
   int tilesFromWall = currentRange / 300;
 
@@ -314,11 +216,17 @@ void forwardOneTile(){
   float error = currentRange - targetRange;
   while( abs(error) > FORWARD_TOLERANCE) {
     motor.travelPower(error);
+    // check black tile
+    if(!blackDetected && blackTile()){
+      targetRange = initialRange;
+      blackDetected = true;
+    }
     currentRange = sensors.getRange();
     error = currentRange - targetRange;
   }
 
-  motor.stop();
+  motor.brake();
+  return blackDetected;
 }
 
 void setWall(Map &cmap, Coordinate currentPos, Direction currentDirection) {
@@ -351,3 +259,23 @@ void setWall(Map &cmap, Coordinate currentPos, Direction currentDirection) {
     if(RWall) cmap.setWall(currentPos, North);      // North wall
   }
 }
+
+// return int
+// 0 - not found
+// 1 - left 
+// 2 - right
+int detectVictim(){
+  if (sensors.getTemperatureLeft() > VICTIM_TEMP && leftWall()) return 1;
+  if (sensors.getTemperatureRight() > VICTIM_TEMP && rightWall()) return 2;
+
+  return 0;
+}
+
+// What to do after victim is located
+void victimFound(Direction dir){
+  Serial.println("Victim FOUND");
+  // Flash Light
+
+  // Drop packet
+}
+

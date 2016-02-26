@@ -49,6 +49,9 @@ class Map{
     void setWall(Coordinate coor, Direction dir);// both walls at once
     void setWall(int x, int y, Direction dir);//same as above but different way to input parameters
     void printMap();
+    boolean hasVictim(Coordinate coor);
+    void setVictim(Coordinate coor);
+    void setBlackTile(Coordinate coor);
     void addVisit(Coordinate coor);
     StackArray <Coordinate> findPath(Coordinate start, Direction currentDirection, Coordinate entrance);
     void printCoordinate(Coordinate coor);

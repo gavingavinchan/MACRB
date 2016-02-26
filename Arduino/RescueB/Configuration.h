@@ -1,24 +1,24 @@
 #define DEBUGLEVEL  0 // 0 - no debug, 1 - basic, 5 - verbal
 #include "Arduino.h"
 
-#define MAP_NORTH 2.47
-#define MAP_SOUTH 5.74
-#define MAP_EAST 4.10
-#define MAP_WEST 1.03
+#define MAP_NORTH 4.59
+#define MAP_SOUTH 2.42
+#define MAP_EAST 6.18
+#define MAP_WEST 3.56
 
-#define HARD_IRON_X -36
-#define HARD_IRON_Y -129
+#define HARD_IRON_X 130
+#define HARD_IRON_Y -62
 
 #define HEADING_TOLERANCE 0.05
-#define FORWARD_TOLERANCE 5
+#define FORWARD_TOLERANCE 10
 
 #define FORWARD_CLEARANCE 111
 
 #define FORWARD_SLOWING_DISTANCE 300
 #define MINIMUM_FORWARD_POWER 80
-#define MAXIMUM_FORWARD_POWER 200
+#define MAXIMUM_FORWARD_POWER 240
 // 255-minimum_foward_power / forward_slowing_distance
-#define FORWARD_SLOWING_CONSTANT 0.15
+#define FORWARD_SLOWING_CONSTANT 0.30
 
 #define ROTATIONAL_SLOWING_DISTANCE 1
 #define MINIMUM_ROTATIONAL_POWER 100
@@ -30,14 +30,14 @@
 #define MAP_MAX_WIDTH 10
 #define MAP_MAX_HEIGHT 6
 
-#define  MAP_WIDTH    4
-#define  MAP_HEIGHT   3
+#define  MAP_WIDTH    9
+#define  MAP_HEIGHT   4
 
-#define ENTRANCEX  3
-#define ENTRANCEY  2
+#define ENTRANCEX  8
+#define ENTRANCEY  3
 
 #define BLACK_THRESHOLD 50
-#define VICTIM_TEMP  28
+#define VICTIM_TEMP  25
 
 // Motor pin definitions
 #define EN1 4
