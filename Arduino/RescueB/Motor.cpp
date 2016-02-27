@@ -76,10 +76,12 @@ void Motor::travelPower(float error) {
   }else if (power<-MAXIMUM_FORWARD_POWER){
     power = -MAXIMUM_FORWARD_POWER;
   }
+  /*
   Serial.print("Travel Power: \t");
   Serial.print(error);
   Serial.print("\t");
   Serial.println(power);
+  */
   motorPower(power,power);
 }
 

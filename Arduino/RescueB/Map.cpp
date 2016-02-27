@@ -9,6 +9,7 @@ Maptile::Maptile(){
   walls = 0x00;
   type = normal;
   visits = 0;
+  victim =  false;
 }
 
 boolean Maptile::hasWall(Direction dir){
@@ -233,11 +234,11 @@ void Map::addVisit(Coordinate coor){
 }
 
 boolean Map::hasVictim(Coordinate coor){
-  return tiles[coor.x][coor.y].type == victim;
+  return tiles[coor.x][coor.y].victim;
 }
 
 void Map::setVictim(Coordinate coor){
-  tiles[coor.x][coor.y].type = victim;
+   tiles[coor.x][coor.y].victim = true;
 }
 
 void Map::setBlackTile(Coordinate coor){

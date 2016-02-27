@@ -1,13 +1,13 @@
 #define DEBUGLEVEL  0 // 0 - no debug, 1 - basic, 5 - verbal
 #include "Arduino.h"
 
-#define MAP_NORTH 4.59
-#define MAP_SOUTH 2.42
-#define MAP_EAST 6.18
-#define MAP_WEST 3.56
+#define MAP_NORTH 4.97
+#define MAP_SOUTH 1.90
+#define MAP_EAST 0.20
+#define MAP_WEST 3.47
 
-#define HARD_IRON_X 130
-#define HARD_IRON_Y -62
+#define HARD_IRON_X -33
+#define HARD_IRON_Y -133
 
 #define HEADING_TOLERANCE 0.05
 #define FORWARD_TOLERANCE 10
@@ -15,8 +15,8 @@
 #define FORWARD_CLEARANCE 111
 
 #define FORWARD_SLOWING_DISTANCE 300
-#define MINIMUM_FORWARD_POWER 80
-#define MAXIMUM_FORWARD_POWER 240
+#define MINIMUM_FORWARD_POWER 100
+#define MAXIMUM_FORWARD_POWER 220
 // 255-minimum_foward_power / forward_slowing_distance
 #define FORWARD_SLOWING_CONSTANT 0.30
 
@@ -33,11 +33,11 @@
 #define  MAP_WIDTH    9
 #define  MAP_HEIGHT   4
 
-#define ENTRANCEX  8
+#define ENTRANCEX  5
 #define ENTRANCEY  3
 
 #define BLACK_THRESHOLD 50
-#define VICTIM_TEMP  25
+#define VICTIM_TEMP  22
 
 // Motor pin definitions
 #define EN1 4
@@ -80,9 +80,6 @@
 #define SENSOR_SERVO_PIN 11
 #define SENSOR_SERVO_CENTER 1586 // microsecond
 
-// LED
-#define LED_PIN  13
-
 // Calibration Mode
 #define CALIBRATION_MODE_PIN  40
 
@@ -98,4 +95,13 @@
 #define M1  4
 #define E2  6
 #define M2  7
+
+// RESCUE KIT
+#define KIT_SERVO 9
+#define KIT_OPEN_MS 2200
+#define KIT_DISPATCH_MS 1300
+#define KIT_STANDBY_MS 1600
+// LED
+#define LED_PIN  10
+
 

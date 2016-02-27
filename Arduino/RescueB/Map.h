@@ -35,6 +35,7 @@ class Maptile{
   public:
     Maptile();  // Constructor
     TileType type;
+    boolean victim;
     int visits;
     void setWall(Direction dir, boolean on); //only one wall
     boolean hasWall(Direction dir);
