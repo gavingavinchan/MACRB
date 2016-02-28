@@ -159,6 +159,7 @@ void doRescueTask(){
 
     // Forward One Tile and detect victim
     boolean blackDetected = false;
+    boolean moveBack = false;
     float initialRange = sensors.getRange();
     while(initialRange>3000){
       motor.brake();
@@ -192,10 +193,11 @@ void doRescueTask(){
       // check black tile
       if(!blackDetected && blackTile()){
         Serial.println("blackTile detected");
+        blackDetected = true;
         if (movingPosition.x!=entrance.x || movingPosition.y!=entrance.y){
           targetRange = initialRange;
-          blackDetected = true;
           cmap.setBlackTile(next);
+          moveBack = true;
         }
       }
       
@@ -239,7 +241,7 @@ void doRescueTask(){
         */   
     delay(500);
 
-    if(!blackDetected)
+    if(!moveBack)
       robotPosition = next;
     robotOrientation = nextDir;
   }while(true);
@@ -285,7 +287,6 @@ void printAllSensorValues(){
 }
 
 
-
 float mapOrientation(Direction dir) {
   float heading = MAP_NORTH;
   switch(dir){
@@ -294,39 +295,6 @@ float mapOrientation(Direction dir) {
     case West: heading = MAP_WEST; break;
   }
   return heading;
-}
-
-// return true if successfully move to next
-// false if a black tile is detected
-boolean forwardOneTile(boolean detectBlack){
-  boolean blackDetected = false;
-  float initialRange = sensors.getRange();
-
-  float currentRange = initialRange;
-  
-  //Assume tiles from wall > 0 
-  int tilesFromWall = currentRange / 300;
-
-  //Serial.println(tilesFromWall);
-  
-  float targetRange = (tilesFromWall - 1) * 300 + FORWARD_CLEARANCE;
-  float error = currentRange - targetRange;
-  while( abs(error) > FORWARD_TOLERANCE) {
-    motor.travelPower(error);
-    // check black tile
-    if(detectBlack && !blackDetected && blackTile()){
-      targetRange = initialRange;
-      blackDetected = true;
-    }
-    currentRange = sensors.getRange();
-    if(currentRange>40){
-      Serial.println(targetRange);
-      error = currentRange - targetRange;
-    }
-  }
-
-  motor.brake();
-  return blackDetected;
 }
 
 void setWall(Map &cmap, Coordinate currentPos, Direction currentDirection) {
@@ -376,14 +344,33 @@ void victimFound(){
   Serial.println("Victim FOUND");
   
   // float previousMapOrientation = mapOrientation(robotOrientation);
-  // Flash Light
-  for(int i=0;i<5;i++) {    //flash for 5 sec
-    digitalWrite(LED_PIN,HIGH);
-    delay(500);
-    digitalWrite(LED_PIN,LOW);
-    delay(500);
-  }
-  // Drop packet
+  //flash for 5 sec while dispensing kit
+  kitDispenser.writeMicroseconds(KIT_OPEN_MS);
+  digitalWrite(LED_PIN,HIGH);
+  delay(500);
+  digitalWrite(LED_PIN,LOW);
+  delay(500);
+  kitDispenser.writeMicroseconds(KIT_DISPATCH_MS);
+  digitalWrite(LED_PIN,HIGH);
+  delay(500);
+  digitalWrite(LED_PIN,LOW);
+  delay(500);
+  kitDispenser.writeMicroseconds(KIT_STANDBY_MS);
+  digitalWrite(LED_PIN,HIGH);
+  delay(500);
+  digitalWrite(LED_PIN,LOW);
+  delay(500);
+  digitalWrite(LED_PIN,HIGH);
+  delay(500);
+  digitalWrite(LED_PIN,LOW);
+  delay(500);
+  digitalWrite(LED_PIN,HIGH);
+  delay(500);
+  digitalWrite(LED_PIN,LOW);
+  delay(250);
+  digitalWrite(LED_PIN,HIGH);
+  delay(250);
+  digitalWrite(LED_PIN,LOW);
   /*
   float victimDirection = MAP_NORTH;
   if(vict == 2) {   //opposite direction since point butt at victim not head
@@ -412,17 +399,13 @@ void victimFound(){
     }
   }
   */
-  Serial.println("turnToBearing(victimDirection)");
+  //Serial.println("turnToBearing(victimDirection)");
   // turnToBearing(buttBearing);
   //dispense kit
-  kitDispenser.writeMicroseconds(KIT_OPEN_MS);
-  delay(1000);
-  kitDispenser.writeMicroseconds(KIT_DISPATCH_MS);
-  delay(1000);
-  kitDispenser.writeMicroseconds(KIT_STANDBY_MS);
-  delay(1000);
+
+  
   //turn back to previous orientation
-  Serial.println("turnToBearing(previousMapOrientation)");
+  //Serial.println("turnToBearing(previousMapOrientation)");
   // turnToBearing(previousMapOrientation);
 }
 

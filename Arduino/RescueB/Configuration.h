@@ -1,13 +1,13 @@
 #define DEBUGLEVEL  0 // 0 - no debug, 1 - basic, 5 - verbal
 #include "Arduino.h"
 
-#define MAP_NORTH 4.97
-#define MAP_SOUTH 1.90
-#define MAP_EAST 0.20
-#define MAP_WEST 3.47
+#define MAP_NORTH 3.41
+#define MAP_SOUTH 0.25
+#define MAP_EAST 4.90
+#define MAP_WEST 1.90
 
-#define HARD_IRON_X -33
-#define HARD_IRON_Y -133
+#define HARD_IRON_X -30
+#define HARD_IRON_Y -151
 
 #define HEADING_TOLERANCE 0.05
 #define FORWARD_TOLERANCE 10
@@ -15,14 +15,14 @@
 #define FORWARD_CLEARANCE 111
 
 #define FORWARD_SLOWING_DISTANCE 300
-#define MINIMUM_FORWARD_POWER 100
+#define MINIMUM_FORWARD_POWER 140
 #define MAXIMUM_FORWARD_POWER 220
 // 255-minimum_foward_power / forward_slowing_distance
 #define FORWARD_SLOWING_CONSTANT 0.30
 
 #define ROTATIONAL_SLOWING_DISTANCE 1
-#define MINIMUM_ROTATIONAL_POWER 100
-#define MAXIMUM_ROTATIONAL_POWER 200
+#define MINIMUM_ROTATIONAL_POWER 140
+#define MAXIMUM_ROTATIONAL_POWER 220
 // 255 - minimum_rotational_power / rotation_slowing_distance
 #define ROTATIONAL_SLOWING_CONSTANT 80
 
@@ -33,7 +33,7 @@
 #define  MAP_WIDTH    9
 #define  MAP_HEIGHT   4
 
-#define ENTRANCEX  5
+#define ENTRANCEX  8
 #define ENTRANCEY  3
 
 #define BLACK_THRESHOLD 50
