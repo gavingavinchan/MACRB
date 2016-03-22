@@ -1,42 +1,47 @@
 #define DEBUGLEVEL  0 // 0 - no debug, 1 - basic, 5 - verbal
 #include "Arduino.h"
 
-#define MAP_NORTH 3.41
-#define MAP_SOUTH 0.25
-#define MAP_EAST 4.90
-#define MAP_WEST 1.90
+//Run test mode to find direct values of the N,S,E,W
+#define MAP_NORTH 5.43
+#define MAP_SOUTH 2.28
+#define MAP_EAST 0.71
+#define MAP_WEST 3.87
 
-#define HARD_IRON_X -30
-#define HARD_IRON_Y -151
+//Input average Hardiron config
+#define HARD_IRON_X -81
+#define HARD_IRON_Y 42
 
 #define HEADING_TOLERANCE 0.05
 #define FORWARD_TOLERANCE 10
 
-#define FORWARD_CLEARANCE 111
+#define FORWARD_CLEARANCE 110
 
 #define FORWARD_SLOWING_DISTANCE 300
-#define MINIMUM_FORWARD_POWER 140
+#define MINIMUM_FORWARD_POWER 120
 #define MAXIMUM_FORWARD_POWER 220
 // 255-minimum_foward_power / forward_slowing_distance
 #define FORWARD_SLOWING_CONSTANT 0.30
 
 #define ROTATIONAL_SLOWING_DISTANCE 1
-#define MINIMUM_ROTATIONAL_POWER 140
-#define MAXIMUM_ROTATIONAL_POWER 220
+#define MINIMUM_ROTATIONAL_POWER 120
+#define MAXIMUM_ROTATIONAL_POWER 200
 // 255 - minimum_rotational_power / rotation_slowing_distance
-#define ROTATIONAL_SLOWING_CONSTANT 80
+#define ROTATIONAL_SLOWING_CONSTANT 50
 
 // MAP MAX WIDTH/HEIGHT must be smaller or less than 15, due to the problem of 4-bit integer
 #define MAP_MAX_WIDTH 10
-#define MAP_MAX_HEIGHT 6
+#define MAP_MAX_HEIGHT 5
 
+//Input map width and height, (0,0) is top right
 #define  MAP_WIDTH    9
 #define  MAP_HEIGHT   4
 
+//Define the entrance block
 #define ENTRANCEX  8
 #define ENTRANCEY  3
 
-#define BLACK_THRESHOLD 50
+//Define Black Threshold and victim temperature
+#define BLACK_THRESHOLD 250
 #define VICTIM_TEMP  22
 
 // Motor pin definitions
@@ -88,8 +93,7 @@
 #define TIMER_DECISION  1000
 
 // determine wall distance
-#define DETERMINE_WALL_DISTANCE   200
-
+#define DETERMINE_WALL_DISTANCE 200
 // Motor pins
 #define E1  5
 #define M1  4

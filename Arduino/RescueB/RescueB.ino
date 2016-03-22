@@ -20,11 +20,11 @@ Coordinate robotPosition, entrance;
 Servo kitDispenser;
 
 boolean rotate = false;
-void setup(){
+void setup() {
 
   // Hardware bus init
   Wire.begin();
-  
+
   Serial.begin(115200);
   delay(100);
   Serial.println(F("START"));
@@ -40,7 +40,7 @@ void setup(){
   kitDispenser.writeMicroseconds(KIT_STANDBY_MS);
 
   pinMode(LED_PIN, OUTPUT);
-  for(int i=0; i<3; i++){
+  for (int i = 0; i < 3; i++) {
     digitalWrite(LED_PIN, HIGH);
     delay(300);
     digitalWrite(LED_PIN, LOW);
@@ -49,27 +49,27 @@ void setup(){
   doRescueTask();
 }
 
-void loop(){
+void loop() {
   printAllSensorValues();
   delay(500);
 }
 
-boolean frontWall(){
-  return sensors.getRange()<DETERMINE_WALL_DISTANCE;
+boolean frontWall() {
+  return sensors.getRange() < DETERMINE_WALL_DISTANCE;
 }
 
 boolean leftWall () {
-  float dist = sensors.getIrDistance(DIST_FL_PIN,3);
-  return dist<DETERMINE_WALL_DISTANCE && dist>0;
+  float dist = sensors.getIrDistance(DIST_FL_PIN, 5);
+  return dist < DETERMINE_WALL_DISTANCE && dist > 0;
 }
 
 boolean rightWall() {
-  float dist = sensors.getIrDistance(DIST_FR_PIN,3);
-  return dist<DETERMINE_WALL_DISTANCE && dist>0;
+  float dist = sensors.getIrDistance(DIST_FR_PIN, 5);
+  return dist < DETERMINE_WALL_DISTANCE && dist > 0;
 }
 
 boolean blackTile() {
-  if(sensors.getGray()>BLACK_THRESHOLD) {
+  if (sensors.getGray() > BLACK_THRESHOLD) {
     return true;
   }
   return false;
@@ -77,22 +77,22 @@ boolean blackTile() {
 
 int vict = 0;
 
-void doRescueTask(){
+void doRescueTask() {
   // Initalize map and global variable on the task
   Map cmap(MAP_WIDTH, MAP_HEIGHT);
   entrance.x = ENTRANCEX;
   entrance.y = ENTRANCEY;
   robotPosition.x = ENTRANCEX;
   robotPosition.y = ENTRANCEY;
-  robotOrientation = North;
+//  robotOrientation = West;
 
-  do{
+  do {
     printAllSensorValues();
     setWall(cmap, robotPosition, robotOrientation);
     cmap.addVisit(robotPosition);
     cmap.printMap();
     StackArray<Coordinate> pathStack = cmap.findPath(robotPosition, robotOrientation, entrance);
-    if (pathStack.count()<=1) break;
+    if (pathStack.count() <= 1) break;
     pathStack.pop(); // current position; no need
     Coordinate next = pathStack.pop();
     Serial.print(F("New destination"));
@@ -104,55 +104,55 @@ void doRescueTask(){
     //while(Serial.read()!='n'){}   //enter n to control each step
 
     Direction nextDir;
-    if (next.x > robotPosition.x){
+    if (next.x > robotPosition.x) {
       // Next is on the East
       nextDir = East;
-    }else if (next.y > robotPosition.y){
+    } else if (next.y > robotPosition.y) {
       nextDir = South;
-    }else if (next.x < robotPosition.x){
+    } else if (next.x < robotPosition.x) {
       nextDir = West;
-    }else if (next.y < robotPosition.y){
+    } else if (next.y < robotPosition.y) {
       nextDir = North;
-    }else{
+    } else {
       // Finished
-      
+
       break;
     }
 
     float heading = MAP_NORTH;
-    switch(nextDir){
+    switch (nextDir) {
       case South: heading = MAP_SOUTH; break;
       case East: heading = MAP_EAST; break;
       case West: heading = MAP_WEST; break;
     }
-    
+
     // turnToBearing(heading);
     // Rotate car and detect victim while rotating
     float curHeading = sensors.getHeading();
-    while( abs(curHeading - heading) > HEADING_TOLERANCE ){
+    while ( abs(curHeading - heading) > HEADING_TOLERANCE ) {
       motor.turnToHeading(curHeading, heading);
       delay(10);
       curHeading = sensors.getHeading();
       // detect Victim chunk
-      if (!cmap.hasVictim(robotPosition)){
+      if (!cmap.hasVictim(robotPosition)) {
         vict = detectVictim();
-        if(vict > 0) {
+        if (vict > 0) {
           Serial.println("Victim found while rotating");
           // victimFound(vict,nextDir);
           cmap.setVictim(robotPosition);
           motor.brake();
           float curBearing = sensors.getHeading();
           float victBearing = curBearing;
-          if(vict==1) victBearing += PI/2;
-          else victBearing -= PI/2;
+          if (vict == 1) victBearing += PI / 2;
+          else victBearing -= PI / 2;
           turnToBearing(victBearing);
           victimFound();
-        } 
+        }
       }
     }
     motor.brake();
     delay(200);
-    
+
 
     delay(200);
 
@@ -161,7 +161,7 @@ void doRescueTask(){
     boolean blackDetected = false;
     boolean moveBack = false;
     float initialRange = sensors.getRange();
-    while(initialRange>3000){
+    while (initialRange > 3000) {
       motor.brake();
       initialRange = sensors.getRange();
     }
@@ -169,59 +169,56 @@ void doRescueTask(){
     Serial.println(initialRange);
 
     float currentRange = initialRange;
-    
-    //Assume tiles from wall > 0 
+
+    //Assume tiles from wall > 0
     int tilesFromWall = currentRange / 300;
-  
+
     //Serial.println(tilesFromWall);
-    
+
     float targetRange = (tilesFromWall - 1) * 300 + FORWARD_CLEARANCE;
     float error = currentRange - targetRange;
     Coordinate movingPosition = robotPosition;
-    
-    while( abs(error) > FORWARD_TOLERANCE) {
+
+    while ( abs(error) > FORWARD_TOLERANCE) {
       motor.travelPower(error);
-      Serial.print("tilesFromWall ");
-      Serial.println(tilesFromWall);
-      if(currentRange < tilesFromWall * 300){
-        Serial.println("Change to next");
+      if (currentRange < tilesFromWall * 300) {
         movingPosition = next;
-      }else{
+      } else {
         movingPosition = robotPosition;
       }
 
       // check black tile
-      if(!blackDetected && blackTile()){
+      if (!blackDetected && blackTile()) {
         Serial.println("blackTile detected");
         blackDetected = true;
-        if (movingPosition.x!=entrance.x || movingPosition.y!=entrance.y){
+        if (movingPosition.x != entrance.x || movingPosition.y != entrance.y) {
           targetRange = initialRange;
           cmap.setBlackTile(next);
           moveBack = true;
         }
       }
-      
-      if (!cmap.hasVictim(movingPosition)){
+
+      if (!cmap.hasVictim(movingPosition)) {
         vict = detectVictim();
 
-        if(vict > 0) {
+        if (vict > 0) {
           Serial.println("Victim found while moving forward");
           // victimFound(vict,nextDir);
           cmap.setVictim(movingPosition);
           motor.brake();
           float curBearing = sensors.getHeading();
           float victBearing = curBearing;
-          if(vict==1) victBearing += PI/2;
-          else victBearing -= PI/2;
+          if (vict == 1) victBearing += PI / 2;
+          else victBearing -= PI / 2;
           turnToBearing(victBearing);
           victimFound();
           turnToBearing(curBearing);
           motor.brake();
-        } 
+        }
       }
-    
+
       currentRange = sensors.getRange();
-      if(currentRange<3000){
+      if (currentRange < 3000) {
         Serial.print(currentRange);
         Serial.print("\t");
         Serial.println(targetRange);
@@ -229,32 +226,32 @@ void doRescueTask(){
       }
     }
     motor.brake();
-        /*
-        if(forwardOneTile(
-          !(
-            (entrance.x==robotPosition.x&&entrance.y==robotPosition.y) ||       //remove if statemet if entrance is not black
-            (entrance.x==next.x&&entrance.y==next.y)) )) {
-          cmap.setBlackTile(next);
-          robotOrientation = nextDir;
-          continue;
-        }
-        */   
+    /*
+      if(forwardOneTile(
+      !(
+        (entrance.x==robotPosition.x&&entrance.y==robotPosition.y) ||       //remove if statemet if entrance is not black
+        (entrance.x==next.x&&entrance.y==next.y)) )) {
+      cmap.setBlackTile(next);
+      robotOrientation = nextDir;
+      continue;
+      }
+    */
     delay(500);
 
-    if(!moveBack)
+    if (!moveBack)
       robotPosition = next;
     robotOrientation = nextDir;
-  }while(true);
+  } while (true);
 
   Serial.println("GOAL");
 }
 
-void turnToBearing(float targetHeading){
+void turnToBearing(float targetHeading) {
   float curHeading = sensors.getHeading();
-  if(targetHeading<0) targetHeading += 2*PI;
-  else if (targetHeading>= 2*PI) targetHeading -= 2*PI;
+  if (targetHeading < 0) targetHeading += 2 * PI;
+  else if (targetHeading >= 2 * PI) targetHeading -= 2 * PI;
   //Serial.println(curHeading);
-  while( abs(curHeading - targetHeading) > HEADING_TOLERANCE ){
+  while ( abs(curHeading - targetHeading) > HEADING_TOLERANCE ) {
     motor.turnToHeading(curHeading, targetHeading);
     delay(10);
     curHeading = sensors.getHeading();
@@ -263,7 +260,7 @@ void turnToBearing(float targetHeading){
   motor.brake();
 }
 
-void printAllSensorValues(){
+void printAllSensorValues() {
   Serial.println("IR_FL\tIR_FR\tIR_BL\tIR_BR\tRan\tCom\tTempLeft\tTempRight\tCGPGrey");
   Serial.print(sensors.getIrDistance(DIST_FL_PIN));
   Serial.print("\t");
@@ -289,7 +286,7 @@ void printAllSensorValues(){
 
 float mapOrientation(Direction dir) {
   float heading = MAP_NORTH;
-  switch(dir){
+  switch (dir) {
     case South: heading = MAP_SOUTH; break;
     case East: heading = MAP_EAST; break;
     case West: heading = MAP_WEST; break;
@@ -299,40 +296,40 @@ float mapOrientation(Direction dir) {
 
 void setWall(Map &cmap, Coordinate currentPos, Direction currentDirection) {
   boolean FWall = false, LWall = false, RWall = false;
-  if(frontWall()) {
+  if (frontWall()) {
     FWall = true;
   }
-  if(leftWall()) {
+  if (leftWall()) {
     LWall = true;
   }
-  if(rightWall()) {
+  if (rightWall()) {
     RWall = true;
   }
-  
-  if(currentDirection==North) {    // Heading is north
-    if(FWall) cmap.setWall(currentPos, North);      // North wall
-    if(LWall) cmap.setWall(currentPos, West);       // west wall
-    if(RWall) cmap.setWall(currentPos, East);      // East wall
-  }else if(currentDirection==East) {    // heading east
-    if(FWall) cmap.setWall(currentPos, East);      // East wall
-    if(LWall) cmap.setWall(currentPos, North);      // North wall
-    if(RWall) cmap.setWall(currentPos, South);      // south wall
-  } else if(currentDirection==South) {   // heading south
-    if(FWall) cmap.setWall(currentPos, South);      // South wall
-    if(LWall) cmap.setWall(currentPos, East);      // East wall
-    if(RWall) cmap.setWall(currentPos, West);      // West wall
-  } else if(currentDirection==West) {   // heading west
-    if(FWall) cmap.setWall(currentPos, West);      // West wall 
-    if(LWall) cmap.setWall(currentPos, South);      // South wall   
-    if(RWall) cmap.setWall(currentPos, North);      // North wall
+
+  if (currentDirection == North) { // Heading is north
+    if (FWall) cmap.setWall(currentPos, North);     // North wall
+    if (LWall) cmap.setWall(currentPos, West);      // west wall
+    if (RWall) cmap.setWall(currentPos, East);     // East wall
+  } else if (currentDirection == East) { // heading east
+    if (FWall) cmap.setWall(currentPos, East);     // East wall
+    if (LWall) cmap.setWall(currentPos, North);     // North wall
+    if (RWall) cmap.setWall(currentPos, South);     // south wall
+  } else if (currentDirection == South) { // heading south
+    if (FWall) cmap.setWall(currentPos, South);     // South wall
+    if (LWall) cmap.setWall(currentPos, East);     // East wall
+    if (RWall) cmap.setWall(currentPos, West);     // West wall
+  } else if (currentDirection == West) { // heading west
+    if (FWall) cmap.setWall(currentPos, West);     // West wall
+    if (LWall) cmap.setWall(currentPos, South);     // South wall
+    if (RWall) cmap.setWall(currentPos, North);     // North wall
   }
 }
 
 // return int
 // 0 - not found
-// 1 - left 
+// 1 - left
 // 2 - right
-int detectVictim(){
+int detectVictim() {
   if (sensors.getTemperatureLeft() > VICTIM_TEMP && leftWall()) return 1;
   if (sensors.getTemperatureRight() > VICTIM_TEMP && rightWall()) return 2;
 
@@ -340,40 +337,40 @@ int detectVictim(){
 }
 
 // What to do after victim is located
-void victimFound(){
+void victimFound() {
   Serial.println("Victim FOUND");
-  
+
   // float previousMapOrientation = mapOrientation(robotOrientation);
   //flash for 5 sec while dispensing kit
   kitDispenser.writeMicroseconds(KIT_OPEN_MS);
-  digitalWrite(LED_PIN,HIGH);
+  digitalWrite(LED_PIN, HIGH);
   delay(500);
-  digitalWrite(LED_PIN,LOW);
+  digitalWrite(LED_PIN, LOW);
   delay(500);
   kitDispenser.writeMicroseconds(KIT_DISPATCH_MS);
-  digitalWrite(LED_PIN,HIGH);
+  digitalWrite(LED_PIN, HIGH);
   delay(500);
-  digitalWrite(LED_PIN,LOW);
+  digitalWrite(LED_PIN, LOW);
   delay(500);
   kitDispenser.writeMicroseconds(KIT_STANDBY_MS);
-  digitalWrite(LED_PIN,HIGH);
+  digitalWrite(LED_PIN, HIGH);
   delay(500);
-  digitalWrite(LED_PIN,LOW);
+  digitalWrite(LED_PIN, LOW);
   delay(500);
-  digitalWrite(LED_PIN,HIGH);
+  digitalWrite(LED_PIN, HIGH);
   delay(500);
-  digitalWrite(LED_PIN,LOW);
+  digitalWrite(LED_PIN, LOW);
   delay(500);
-  digitalWrite(LED_PIN,HIGH);
+  digitalWrite(LED_PIN, HIGH);
   delay(500);
-  digitalWrite(LED_PIN,LOW);
+  digitalWrite(LED_PIN, LOW);
   delay(250);
-  digitalWrite(LED_PIN,HIGH);
+  digitalWrite(LED_PIN, HIGH);
   delay(250);
-  digitalWrite(LED_PIN,LOW);
+  digitalWrite(LED_PIN, LOW);
   /*
-  float victimDirection = MAP_NORTH;
-  if(vict == 2) {   //opposite direction since point butt at victim not head
+    float victimDirection = MAP_NORTH;
+    if(vict == 2) {   //opposite direction since point butt at victim not head
     switch(robotOrientation) {
       case North:
         victimDirection = MAP_WEST;
@@ -385,7 +382,7 @@ void victimFound(){
         victimDirection = MAP_SOUTH;
         break;
     }
-  } else if(vict == 1) {
+    } else if(vict == 1) {
     switch(robotOrientation) {
       case North:
         victimDirection = MAP_EAST;
@@ -397,13 +394,13 @@ void victimFound(){
         victimDirection = MAP_SOUTH;
         break;
     }
-  }
+    }
   */
   //Serial.println("turnToBearing(victimDirection)");
   // turnToBearing(buttBearing);
   //dispense kit
 
-  
+
   //turn back to previous orientation
   //Serial.println("turnToBearing(previousMapOrientation)");
   // turnToBearing(previousMapOrientation);
