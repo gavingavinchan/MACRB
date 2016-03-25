@@ -2,14 +2,14 @@
 #include "Arduino.h"
 
 //Run test mode to find direct values of the N,S,E,W
-#define MAP_NORTH 5.43
-#define MAP_SOUTH 2.28
-#define MAP_EAST 0.71
-#define MAP_WEST 3.87
+#define MAP_NORTH 0
+#define MAP_SOUTH 3.14
+#define MAP_EAST 1.70
+#define MAP_WEST 4.3
 
 //Input average Hardiron config
-#define HARD_IRON_X -81
-#define HARD_IRON_Y 42
+#define HARD_IRON_X 0
+#define HARD_IRON_Y 0
 
 #define HEADING_TOLERANCE 0.05
 #define FORWARD_TOLERANCE 10
@@ -29,20 +29,20 @@
 #define ROTATIONAL_SLOWING_CONSTANT 50
 
 // MAP MAX WIDTH/HEIGHT must be smaller or less than 15, due to the problem of 4-bit integer
-#define MAP_MAX_WIDTH 10
-#define MAP_MAX_HEIGHT 5
+#define MAP_MAX_WIDTH 9
+#define MAP_MAX_HEIGHT 4
 
 //Input map width and height, (0,0) is top right
 #define  MAP_WIDTH    9
 #define  MAP_HEIGHT   4
 
 //Define the entrance block
-#define ENTRANCEX  8
+#define ENTRANCEX  0
 #define ENTRANCEY  3
 
 //Define Black Threshold and victim temperature
-#define BLACK_THRESHOLD 250
-#define VICTIM_TEMP  22
+#define BLACK_THRESHOLD 29
+#define VICTIM_TEMP  30
 
 // Motor pin definitions
 #define EN1 4
