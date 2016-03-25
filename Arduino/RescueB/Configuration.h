@@ -2,14 +2,14 @@
 #include "Arduino.h"
 
 //Run test mode to find direct values of the N,S,E,W
-#define MAP_NORTH 0
-#define MAP_SOUTH 3.14
-#define MAP_EAST 1.70
-#define MAP_WEST 4.3
+#define MAP_NORTH 5.54
+#define MAP_SOUTH 2.46
+#define MAP_EAST 0.86
+#define MAP_WEST 3.99
 
 //Input average Hardiron config
-#define HARD_IRON_X 0
-#define HARD_IRON_Y 0
+#define HARD_IRON_X -74
+#define HARD_IRON_Y 35
 
 #define HEADING_TOLERANCE 0.05
 #define FORWARD_TOLERANCE 10
@@ -28,10 +28,6 @@
 // 255 - minimum_rotational_power / rotation_slowing_distance
 #define ROTATIONAL_SLOWING_CONSTANT 50
 
-// MAP MAX WIDTH/HEIGHT must be smaller or less than 15, due to the problem of 4-bit integer
-#define MAP_MAX_WIDTH 9
-#define MAP_MAX_HEIGHT 4
-
 //Input map width and height, (0,0) is top right
 #define  MAP_WIDTH    9
 #define  MAP_HEIGHT   4
@@ -41,11 +37,8 @@
 #define ENTRANCEY  3
 
 //Define Black Threshold and victim temperature
-#define BLACK_THRESHOLD 29
-#define VICTIM_TEMP  30
-
-// Motor pin definitions
-#define EN1 4
+#define BLACK_THRESHOLD 250
+#define VICTIM_TEMP  22
 
 // Software I2C
 // MLX90614
@@ -80,17 +73,6 @@
 
 // Ultrasonic front - TODO
 #define KS109  0x74
-
-// Servo for sensor tower
-#define SENSOR_SERVO_PIN 11
-#define SENSOR_SERVO_CENTER 1586 // microsecond
-
-// Calibration Mode
-#define CALIBRATION_MODE_PIN  40
-
-// Timer event trigger millisecond
-#define TIMER_SENSOR  200
-#define TIMER_DECISION  1000
 
 // determine wall distance
 #define DETERMINE_WALL_DISTANCE 200

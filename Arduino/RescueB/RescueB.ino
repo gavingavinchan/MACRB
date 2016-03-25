@@ -137,7 +137,7 @@ void doRescueTask() {
       if (!cmap.hasVictim(robotPosition)) {
         vict = detectVictim();
         if (vict > 0) {
-          Serial.println("Victim found while rotating");
+          Serial.println(F("Victim found while rotating"));
           // victimFound(vict,nextDir);
           cmap.setVictim(robotPosition);
           motor.brake();
@@ -165,7 +165,7 @@ void doRescueTask() {
       motor.brake();
       initialRange = sensors.getRange();
     }
-    Serial.print("initialRange: ");
+    //Serial.print("initialRange: ");
     Serial.println(initialRange);
 
     float currentRange = initialRange;
@@ -189,7 +189,7 @@ void doRescueTask() {
 
       // check black tile
       if (!blackDetected && blackTile()) {
-        Serial.println("blackTile detected");
+        //Serial.println("blackTile detected");
         blackDetected = true;
         if (movingPosition.x != entrance.x || movingPosition.y != entrance.y) {
           targetRange = initialRange;
@@ -202,7 +202,7 @@ void doRescueTask() {
         vict = detectVictim();
 
         if (vict > 0) {
-          Serial.println("Victim found while moving forward");
+          //Serial.println("Victim found while moving forward");
           // victimFound(vict,nextDir);
           cmap.setVictim(movingPosition);
           motor.brake();
@@ -261,7 +261,7 @@ void turnToBearing(float targetHeading) {
 }
 
 void printAllSensorValues() {
-  Serial.println("IR_FL\tIR_FR\tIR_BL\tIR_BR\tRan\tCom\tTempLeft\tTempRight\tCGPGrey");
+  Serial.println(F("IR_FL\tIR_FR\tIR_BL\tIR_BR\tRan\tCom\tTempLeft\tTempRight\tCGPGrey"));
   Serial.print(sensors.getIrDistance(DIST_FL_PIN));
   Serial.print("\t");
   Serial.print(sensors.getIrDistance(DIST_FR_PIN));
@@ -338,7 +338,7 @@ int detectVictim() {
 
 // What to do after victim is located
 void victimFound() {
-  Serial.println("Victim FOUND");
+  Serial.println(F("Victim FOUND"));
 
   // float previousMapOrientation = mapOrientation(robotOrientation);
   //flash for 5 sec while dispensing kit

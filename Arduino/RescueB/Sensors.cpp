@@ -7,8 +7,8 @@
 Sensors::Sensors(){}
 
 void Sensors::init(){
-  towerServo.attach(SENSOR_SERVO_PIN);
-  towerServo.writeMicroseconds(SENSOR_SERVO_CENTER);
+//  towerServo.attach(SENSOR_SERVO_PIN);
+//  towerServo.writeMicroseconds(SENSOR_SERVO_CENTER);
   
   // init Mangetometer
   Wire.beginTransmission(HMC5883L_Address);

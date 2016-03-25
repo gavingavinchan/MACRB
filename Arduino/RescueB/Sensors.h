@@ -9,6 +9,7 @@
 
 class Sensors{
   public:
+  /*
     enum SensorType{
       Temp_Left = 0,
       Temp_Right = 1,
@@ -19,7 +20,7 @@ class Sensors{
       FloorGray = 6, 
       AccelTap = 7
     };
-    
+    */
     Sensors();
     void init();
     // Basic functions
@@ -31,7 +32,7 @@ class Sensors{
     float getRange();
   private:
     float getTemperature(byte address);
-    Servo towerServo;
+    //Servo towerServo;
     void ks109Init();
 };
 #endif

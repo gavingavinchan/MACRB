@@ -54,8 +54,9 @@ void Map::setWall(Coordinate coor, Direction dir){
   setWall(coor.x, coor.y, dir);
 }
 
+
 void Map::printMap(){
-  Serial.println("Map:");
+  //Serial.println("Map:");
   for(int j=0; j<MAP_HEIGHT; j++){
     for(int i=0; i<MAP_WIDTH; i++){
       Serial.print(tiles[i][j].type);

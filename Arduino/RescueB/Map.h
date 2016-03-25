@@ -22,7 +22,7 @@ enum Direction{
 };
 
 struct Coordinate{
-  int x, y;
+  signed char x, y;
 };
 
 struct backTrack{
@@ -56,7 +56,6 @@ class Map{
     void addVisit(Coordinate coor);
     StackArray <Coordinate> findPath(Coordinate start, Direction currentDirection, Coordinate entrance);
     void printCoordinate(Coordinate coor);
-    static void debugMap(int ex, int ey);
   private:
     void findAvailableTile(int cx, int cy, Direction dir, 
       boolean V[MAP_WIDTH][MAP_HEIGHT], backTrack track[MAP_WIDTH][MAP_HEIGHT], QueueList<Coordinate>& Q);
