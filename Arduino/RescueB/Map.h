@@ -22,7 +22,7 @@ enum Direction{
 };
 
 struct Coordinate{
-  signed char x, y;
+  int x, y;
 };
 
 struct backTrack{

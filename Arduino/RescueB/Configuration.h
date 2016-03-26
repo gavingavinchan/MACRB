@@ -2,17 +2,17 @@
 #include "Arduino.h"
 
 //Run test mode to find direct values of the N,S,E,W
-#define MAP_NORTH 5.54
-#define MAP_SOUTH 2.46
-#define MAP_EAST 0.86
-#define MAP_WEST 3.99
+#define MAP_NORTH 0.00
+#define MAP_SOUTH 3.07 
+#define MAP_EAST 1.70
+#define MAP_WEST 4.50
 
 //Input average Hardiron config
-#define HARD_IRON_X -74
-#define HARD_IRON_Y 35
+#define HARD_IRON_X -51
+#define HARD_IRON_Y 17
 
 #define HEADING_TOLERANCE 0.05
-#define FORWARD_TOLERANCE 10
+#define FORWARD_TOLERANCE 15
 
 #define FORWARD_CLEARANCE 110
 
@@ -24,21 +24,21 @@
 
 #define ROTATIONAL_SLOWING_DISTANCE 1
 #define MINIMUM_ROTATIONAL_POWER 120
-#define MAXIMUM_ROTATIONAL_POWER 200
+#define MAXIMUM_ROTATIONAL_POWER 220
 // 255 - minimum_rotational_power / rotation_slowing_distance
 #define ROTATIONAL_SLOWING_CONSTANT 50
 
 //Input map width and height, (0,0) is top right
-#define  MAP_WIDTH    9
+#define  MAP_WIDTH   8
 #define  MAP_HEIGHT   4
 
 //Define the entrance block
-#define ENTRANCEX  0
+#define ENTRANCEX  4
 #define ENTRANCEY  3
 
 //Define Black Threshold and victim temperature
-#define BLACK_THRESHOLD 250
-#define VICTIM_TEMP  22
+#define BLACK_THRESHOLD 30
+#define VICTIM_TEMP  35
 
 // Software I2C
 // MLX90614
