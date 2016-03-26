@@ -119,16 +119,41 @@ void doRescueTask() {
       break;
     }
 
+/*
     float heading = MAP_NORTH;
     switch (nextDir) {
       case South: heading = MAP_SOUTH; break;
       case East: heading = MAP_EAST; break;
       case West: heading = MAP_WEST; break;
     }
-
+*/
     // turnToBearing(heading);
     // Rotate car and detect victim while rotating
     float curHeading = sensors.getHeading();
+    float heading = curHeading;
+    if (robotOrientation!=nextDir){
+      if(robotOrientation==North){
+        if(nextDir==South) heading += PI;
+        else if (nextDir==East) heading += PI/2;
+        else heading -= PI /2;
+      } else if (robotOrientation==East){
+        if(nextDir==South) heading += PI/2;
+        else if (nextDir==West) heading += PI;
+        else heading -= PI /2;        
+      } else if (robotOrientation==South){
+        if(nextDir==North) heading += PI;
+        else if (nextDir==West) heading += PI/2;
+        else heading -= PI /2;        
+      } else {
+        if(nextDir==East) heading += PI;
+        else if (nextDir==North) heading += PI/2;
+        else heading -= PI/2;        
+      }
+    }
+     
+    heading = heading > PI * 2 ? heading - PI * 2 : heading;
+    heading = heading < 0 ? heading + PI * 2 : heading;
+
     while ( abs(curHeading - heading) > HEADING_TOLERANCE ) {
       motor.turnToHeading(curHeading, heading);
       delay(10);

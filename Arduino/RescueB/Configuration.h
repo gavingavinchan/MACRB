@@ -8,8 +8,8 @@
 #define MAP_WEST 4.50
 
 //Input average Hardiron config
-#define HARD_IRON_X -51
-#define HARD_IRON_Y 17
+#define HARD_IRON_X -77
+#define HARD_IRON_Y 32
 
 #define HEADING_TOLERANCE 0.05
 #define FORWARD_TOLERANCE 15
